@@ -1,16 +1,16 @@
 import os
 import logging
+import tempfile
+import argparse
 from openai import OpenAI
 from dotenv import load_dotenv
 from pydub import AudioSegment
-import tempfile
-import argparse
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-def transcribe_audio(input_path, output_path, batch_size=None, offset=0):
+def transcribe_audio(input_path, output_path, batch_size=None, offset=0, limit=None):
     load_dotenv()
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -22,13 +22,23 @@ def transcribe_audio(input_path, output_path, batch_size=None, offset=0):
 
     # Load audio and apply offset
     audio = AudioSegment.from_file(input_path)
+    audio_duration_ms = len(audio)
+
     offset_ms = offset * 1000
-    if offset_ms >= len(audio):
+    if offset_ms >= audio_duration_ms:
         raise ValueError("Offset exceeds audio length.")
     audio = audio[offset_ms:]
 
+    if limit:
+        limit_ms = limit * 1000
+        if limit_ms > len(audio):
+            logger.warning(
+                "Limit is longer than remaining audio. Using full audio after offset."
+            )
+        else:
+            audio = audio[:limit_ms]
+
     if batch_size is None:
-        # Simple transcription (no batching)
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmpfile:
             audio.export(tmpfile.name, format="mp3")
             with open(tmpfile.name, "rb") as audio_file:
@@ -36,6 +46,7 @@ def transcribe_audio(input_path, output_path, batch_size=None, offset=0):
                     model="whisper-1", file=audio_file, response_format="text"
                 )
         os.remove(tmpfile.name)
+
         with open(output_path, "w") as f:
             f.write(transcription)
         print(f"Transcription saved to {output_path}")
@@ -43,7 +54,7 @@ def transcribe_audio(input_path, output_path, batch_size=None, offset=0):
 
     # Batch processing
     print(
-        f"Processing in batches of {batch_size} seconds (offset: {offset} seconds)..."
+        f"Processing in batches of {batch_size} seconds (offset: {offset}, limit: {limit or 'full'})..."
     )
     duration_sec = len(audio) / 1000
     batches = int(duration_sec // batch_size) + 1
@@ -81,13 +92,17 @@ if __name__ == "__main__":
     )
     parser.add_argument("--batch-size", type=int, help="Optional batch size in seconds")
     parser.add_argument(
-        "--offset",
-        type=int,
-        default=0,
-        help="Optional offset in seconds to skip from start",
+        "--offset", type=int, default=0, help="Seconds to skip from the beginning"
+    )
+    parser.add_argument(
+        "--limit", type=int, help="Maximum duration to transcribe (in seconds)"
     )
 
     args = parser.parse_args()
     transcribe_audio(
-        args.input_audio_path, args.output_text_path, args.batch_size, args.offset
+        args.input_audio_path,
+        args.output_text_path,
+        args.batch_size,
+        args.offset,
+        args.limit,
     )
