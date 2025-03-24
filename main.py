@@ -39,7 +39,7 @@ def transcribe_audio(input_path, output_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python transcribe_audio.py <input_audio_path> <output_text_path>")
+        print("Usage: python main.py <input_audio_path> <output_text_path>")
         sys.exit(1)
 
     input_audio_path = sys.argv[1]
