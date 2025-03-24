@@ -1,2 +1,0 @@
-[console_scripts]
-openai-whisper = openai_whisper.main:main
