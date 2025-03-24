@@ -89,19 +89,25 @@ OPENAI_API_KEY=your_openai_api_key_here
 Transcribe the whole file:
 
 ```bash
-openai-whisper audio.mp3 transcript.txt
+openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt
 ```
 
 Transcribe in 60-second chunks:
 
 ```bash
-openai-whisper audio.mp3 transcript.txt --batch-size 60
+openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt --batch-size 60
 ```
 
 Skip first 10s, limit to 30s:
 
 ```bash
-openai-whisper audio.mp3 transcript.txt --offset 10 --limit 30
+openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt --offset 10 --limit 30
+```
+
+Skip first 20s, limit to 65s in 10-second chunks:
+
+```bash
+openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt --batch-size 10 --offset 20 --limit 65
 ```
 
 ---
