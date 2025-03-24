@@ -2,7 +2,8 @@ import os
 import logging
 import tempfile
 import argparse
-from openai import OpenAI
+from typing import Optional
+from openai import NotGiven, OpenAI
 from dotenv import load_dotenv
 from pydub import AudioSegment
 
@@ -10,7 +11,14 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-def transcribe_audio(input_path, output_path, batch_size=None, offset=0, limit=None):
+def transcribe_audio(
+    input_path: str,
+    output_path: str,
+    batch_size: Optional[int] = None,
+    offset: int = 0,
+    limit: Optional[int] = None,
+    prompt: str | NotGiven = NotGiven(),
+):
     load_dotenv()
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -43,7 +51,10 @@ def transcribe_audio(input_path, output_path, batch_size=None, offset=0, limit=N
             audio.export(tmpfile.name, format="mp3")
             with open(tmpfile.name, "rb") as audio_file:
                 transcription = client.audio.transcriptions.create(
-                    model="whisper-1", file=audio_file, response_format="text"
+                    model="whisper-1",
+                    file=audio_file,
+                    response_format="text",
+                    prompt=prompt,
                 )
         os.remove(tmpfile.name)
 
@@ -97,6 +108,9 @@ def main():
     parser.add_argument(
         "--limit", type=int, help="Maximum duration to transcribe (in seconds)"
     )
+    parser.add_argument(
+        "--prompt", type=str, help="Prompt to use for the transcription"
+    )
 
     args = parser.parse_args()
     transcribe_audio(
@@ -105,4 +119,5 @@ def main():
         args.batch_size,
         args.offset,
         args.limit,
+        args.prompt,
     )
