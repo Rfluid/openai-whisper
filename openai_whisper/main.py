@@ -81,7 +81,10 @@ def transcribe_audio(
             chunk.export(tmpfile.name, format="mp3")
             with open(tmpfile.name, "rb") as audio_file:
                 transcription = client.audio.transcriptions.create(
-                    model="whisper-1", file=audio_file, response_format="text"
+                    model="whisper-1",
+                    file=audio_file,
+                    response_format="text",
+                    prompt=prompt,
                 )
                 full_transcription += transcription + "\n"
 
