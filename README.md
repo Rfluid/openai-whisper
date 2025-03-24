@@ -11,6 +11,7 @@ This Python app transcribes audio files using OpenAI's Whisper model. You can tr
 - 🔀 Optional `--batch-size` flag to split audio into chunks
 - ⏩ Optional `--offset` to skip seconds from the beginning
 - 🎯 Optional `--limit` to transcribe only a specific duration
+- 📝 Optional `--prompt` to provide a text prompt to guide the transcription
 - 💾 Saves transcription to a plain `.txt` file
 - 🔐 Uses `.env` for secure API key management
 
@@ -108,6 +109,12 @@ Skip first 20s, limit to 65s in 10-second chunks:
 
 ```bash
 openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt --batch-size 10 --offset 20 --limit 65
+```
+
+Use a prompt to guide the transcription:
+
+```bash
+openai-whisper ./Fade_to_Black.mp3 ./Fade_to_Black.txt --prompt "This is a Dire Straits song. Add music notation to mark pauses."
 ```
 
 ---
