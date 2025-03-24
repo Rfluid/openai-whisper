@@ -82,7 +82,7 @@ def transcribe_audio(input_path, output_path, batch_size=None, offset=0, limit=N
     print(f"Full transcription saved to {output_path}")
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="Transcribe audio using OpenAI Whisper API."
     )
