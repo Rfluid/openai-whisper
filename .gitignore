@@ -1,2 +1,35 @@
-venv
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Environments
 .env
+.venv/
+env/
+venv/
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Transcription outputs
+*.txt
+*.srt
+*.vtt
